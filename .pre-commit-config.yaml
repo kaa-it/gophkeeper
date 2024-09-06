@@ -1,0 +1,36 @@
+repos:
+  - repo: local
+    hooks:
+      - id: gofumpt
+        name: gofumpt
+        entry: sh -c 'gofumpt -l -w ./internal'
+        language: system
+        types: [go]
+
+      - id: goimports
+        name: goimports
+        entry: sh -c 'goimports -w --local github.com/kaa-it/gophkeeper ./internal'
+        language: system
+        types: [go]
+
+      - id: golines
+        name: golines
+        entry: sh -c 'find . -name "*.go" -exec golines -w {} -m 120 \;'
+        language: system
+        types: [go]
+
+      - id: golangci-lint
+        name: golangci-lint
+        entry: sh -c 'golangci-lint run ./internal/...'
+        language: system
+        types: [go]
+
+      - id: race
+        name: race
+        entry: sh -c 'make race'
+        language: system
+
+      - id: msan
+        name: msan
+        entry: sh -c 'make msan'
+        language: system
