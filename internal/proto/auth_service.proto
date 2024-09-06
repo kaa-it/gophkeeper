@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package gophkeeper;
+
+option go_package = "github.com/kaa-it/gophkeeper/internal/pb";
+
+message LoginRequest {
+  string login = 1;
+  string password = 2;
+}
+
+message RegisterRequest {
+  string username = 1;
+  string login = 2;
+  string password = 3;
+}
+
+message AuthResponse {
+  string access_token = 1;
+}
+
+service AuthService {
+  rpc Login(LoginRequest) returns (AuthResponse);
+  rpc Register(RegisterRequest) returns (AuthResponse);
+}

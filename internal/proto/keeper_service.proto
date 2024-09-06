@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package gophkeeper;
+
+option go_package = "github.com/kaa-it/gophkeeper/internal/pb";
+
+message Credentials {
+    string metadata = 1;
+    string login = 2;
+    string password = 3;
+}
+
+message BillingAddress {
+    string country = 1;
+    string street = 2;
+    string city = 3;
+    string postcode = 4;
+}
+
+message CreditCard {
+    string metadata = 1;
+    string name = 2;
+    string month = 3;
+    string year = 4;
+    BillingAddress billingAddress = 5;
+}
+
+message Text {
+    string metadata = 1;
+    string text = 2;
+}
+
+message FileRequest {
+    oneof data {
+        FileInfo info = 1;
+        bytes chunk_data = 2;
+    }
+}
+
+message FileInfo {
+    string metadata = 1;
+    string name = 2;
+}

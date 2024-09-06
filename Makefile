@@ -1,4 +1,4 @@
-.PHONY: build race msan pre-commit run-pre-commit lint gofumpt goimports tools
+.PHONY: build race msan pre-commit run-pre-commit lint gofumpt goimports tools proto
 
 CLIENT_VERSION := 0.1.0
 SERVER_VERSION := 0.1.0
@@ -15,6 +15,11 @@ build:
 		"-X github.com/kaa-it/gophkeeper/pkg/buildconfig.buildVersion=${SERVER_VERSION} \
 		-X 'github.com/kaa-it/gophkeeper/pkg/buildconfig.buildDate=${DATE}' \
 		-X github.com/kaa-it/gophkeeper/pkg/buildconfig.buildCommit=${COMMIT}" ./cmd/server ;
+
+proto:
+	protoc --proto_path=internal/proto --go_out=./internal/pb --go_opt=paths=source_relative \
+	  --go-grpc_out=./internal/pb --go-grpc_opt=paths=source_relative \
+	  internal/proto/*.proto
 
 pre-commit:
 	pre-commit install
