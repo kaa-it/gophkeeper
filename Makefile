@@ -37,6 +37,7 @@ tools:
 	go install github.com/segmentio/golines@latest
 	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+	go install github.com/ktr0731/evans@latest
 
 lint:
 	golangci-lint run ./internal/...
@@ -46,3 +47,9 @@ gofumpt:
 
 goimports:
 	goimports -w --local github.com/kaa-it/gophkeeper ./internal
+
+evans:
+	evans -r repl -p 8080
+
+cert:
+	cd cert; ./gen.sh; cd ..

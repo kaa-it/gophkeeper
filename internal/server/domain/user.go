@@ -8,10 +8,11 @@ import (
 
 type User struct {
 	Username       string
+	Login          string
 	HashedPassword string
 }
 
-func NewUser(username, password string) (*User, error) {
+func NewUser(username, login, password string) (*User, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, fmt.Errorf("error hashing password: %w", err)
@@ -19,6 +20,7 @@ func NewUser(username, password string) (*User, error) {
 
 	return &User{
 		Username:       username,
+		Login:          login,
 		HashedPassword: string(hashedPassword),
 	}, nil
 }

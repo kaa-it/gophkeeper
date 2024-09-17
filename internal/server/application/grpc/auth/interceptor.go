@@ -10,14 +10,12 @@ import (
 )
 
 type Interceptor struct {
-	jwtManager      *JWTManager
-	accessibleRoles map[string][]string
+	jwtManager *JWTManager
 }
 
-func NewAuthInterceptor(jwtManager *JWTManager, accessibleRoles map[string][]string) *Interceptor {
+func NewAuthInterceptor(jwtManager *JWTManager) *Interceptor {
 	return &Interceptor{
-		jwtManager:      jwtManager,
-		accessibleRoles: accessibleRoles,
+		jwtManager: jwtManager,
 	}
 }
 
