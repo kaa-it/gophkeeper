@@ -5,6 +5,7 @@ SERVER_VERSION := 0.1.0
 
 COMMIT := $(shell git rev-parse --short HEAD)
 DATE := $(shell date +'%Y/%m/%d %H:%M:%S')
+PKG_LIST := $(shell go list ./internal/... ;)
 
 build:
 	go build -o gophkeeper_client -ldflags \
@@ -17,6 +18,7 @@ build:
 		-X github.com/kaa-it/gophkeeper/pkg/buildconfig.buildCommit=${COMMIT}" ./cmd/server ;
 
 proto:
+	mkdir -p ./internal/pb
 	protoc --proto_path=internal/proto --go_out=./internal/pb --go_opt=paths=source_relative \
 	  --go-grpc_out=./internal/pb --go-grpc_opt=paths=source_relative \
 	  internal/proto/*.proto
@@ -28,9 +30,13 @@ run-pre-commit:
 	pre-commit run --all-files
 
 tools:
-	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.58.0
+	#curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.58.0
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.58.0
 	go install golang.org/x/tools/cmd/goimports@latest
 	go install mvdan.cc/gofumpt@v0.6.0
+	go install github.com/segmentio/golines@latest
+	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 
 lint:
 	golangci-lint run ./internal/...

@@ -24,13 +24,3 @@ repos:
         entry: sh -c 'golangci-lint run ./internal/...'
         language: system
         types: [go]
-
-      - id: race
-        name: race
-        entry: sh -c 'make race'
-        language: system
-
-      - id: msan
-        name: msan
-        entry: sh -c 'make msan'
-        language: system

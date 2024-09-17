@@ -19,4 +19,3 @@ func PrintBuildInfo() {
 	_, _ = fmt.Fprintf(&buf, "Build commit: %s\n", buildCommit)
 	_, _ = fmt.Print(buf.String())
 }
-
