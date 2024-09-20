@@ -27,7 +27,7 @@ func NewClient(cc *grpc.ClientConn) *Client {
 
 	return &Client{
 		service:       service,
-		notifyChannel: make(chan struct{}, 1),
+		notifyChannel: make(chan struct{}),
 	}
 }
 

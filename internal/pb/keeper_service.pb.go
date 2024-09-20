@@ -21,18 +21,16 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type Credentials struct {
+type UploadCredentialsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Metadata string `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
-	Login    string `protobuf:"bytes,2,opt,name=login,proto3" json:"login,omitempty"`
-	Password string `protobuf:"bytes,3,opt,name=password,proto3" json:"password,omitempty"`
+	Credentials *Credentials `protobuf:"bytes,1,opt,name=credentials,proto3" json:"credentials,omitempty"`
 }
 
-func (x *Credentials) Reset() {
-	*x = Credentials{}
+func (x *UploadCredentialsRequest) Reset() {
+	*x = UploadCredentialsRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_keeper_service_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -40,13 +38,13 @@ func (x *Credentials) Reset() {
 	}
 }
 
-func (x *Credentials) String() string {
+func (x *UploadCredentialsRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Credentials) ProtoMessage() {}
+func (*UploadCredentialsRequest) ProtoMessage() {}
 
-func (x *Credentials) ProtoReflect() protoreflect.Message {
+func (x *UploadCredentialsRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_keeper_service_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -58,45 +56,28 @@ func (x *Credentials) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Credentials.ProtoReflect.Descriptor instead.
-func (*Credentials) Descriptor() ([]byte, []int) {
+// Deprecated: Use UploadCredentialsRequest.ProtoReflect.Descriptor instead.
+func (*UploadCredentialsRequest) Descriptor() ([]byte, []int) {
 	return file_keeper_service_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Credentials) GetMetadata() string {
+func (x *UploadCredentialsRequest) GetCredentials() *Credentials {
 	if x != nil {
-		return x.Metadata
+		return x.Credentials
 	}
-	return ""
+	return nil
 }
 
-func (x *Credentials) GetLogin() string {
-	if x != nil {
-		return x.Login
-	}
-	return ""
-}
-
-func (x *Credentials) GetPassword() string {
-	if x != nil {
-		return x.Password
-	}
-	return ""
-}
-
-type BillingAddress struct {
+type UploadCredentialsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Country  string `protobuf:"bytes,1,opt,name=country,proto3" json:"country,omitempty"`
-	Street   string `protobuf:"bytes,2,opt,name=street,proto3" json:"street,omitempty"`
-	City     string `protobuf:"bytes,3,opt,name=city,proto3" json:"city,omitempty"`
-	Postcode string `protobuf:"bytes,4,opt,name=postcode,proto3" json:"postcode,omitempty"`
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 }
 
-func (x *BillingAddress) Reset() {
-	*x = BillingAddress{}
+func (x *UploadCredentialsResponse) Reset() {
+	*x = UploadCredentialsResponse{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_keeper_service_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -104,13 +85,13 @@ func (x *BillingAddress) Reset() {
 	}
 }
 
-func (x *BillingAddress) String() string {
+func (x *UploadCredentialsResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*BillingAddress) ProtoMessage() {}
+func (*UploadCredentialsResponse) ProtoMessage() {}
 
-func (x *BillingAddress) ProtoReflect() protoreflect.Message {
+func (x *UploadCredentialsResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_keeper_service_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -122,53 +103,32 @@ func (x *BillingAddress) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use BillingAddress.ProtoReflect.Descriptor instead.
-func (*BillingAddress) Descriptor() ([]byte, []int) {
+// Deprecated: Use UploadCredentialsResponse.ProtoReflect.Descriptor instead.
+func (*UploadCredentialsResponse) Descriptor() ([]byte, []int) {
 	return file_keeper_service_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *BillingAddress) GetCountry() string {
+func (x *UploadCredentialsResponse) GetId() string {
 	if x != nil {
-		return x.Country
+		return x.Id
 	}
 	return ""
 }
 
-func (x *BillingAddress) GetStreet() string {
-	if x != nil {
-		return x.Street
-	}
-	return ""
-}
-
-func (x *BillingAddress) GetCity() string {
-	if x != nil {
-		return x.City
-	}
-	return ""
-}
-
-func (x *BillingAddress) GetPostcode() string {
-	if x != nil {
-		return x.Postcode
-	}
-	return ""
-}
-
-type CreditCard struct {
+type UploadFileRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Metadata       string          `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
-	Name           string          `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Month          string          `protobuf:"bytes,3,opt,name=month,proto3" json:"month,omitempty"`
-	Year           string          `protobuf:"bytes,4,opt,name=year,proto3" json:"year,omitempty"`
-	BillingAddress *BillingAddress `protobuf:"bytes,5,opt,name=billingAddress,proto3" json:"billingAddress,omitempty"`
+	// Types that are assignable to Data:
+	//
+	//	*UploadFileRequest_Info
+	//	*UploadFileRequest_ChunkData
+	Data isUploadFileRequest_Data `protobuf_oneof:"data"`
 }
 
-func (x *CreditCard) Reset() {
-	*x = CreditCard{}
+func (x *UploadFileRequest) Reset() {
+	*x = UploadFileRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_keeper_service_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -176,13 +136,13 @@ func (x *CreditCard) Reset() {
 	}
 }
 
-func (x *CreditCard) String() string {
+func (x *UploadFileRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CreditCard) ProtoMessage() {}
+func (*UploadFileRequest) ProtoMessage() {}
 
-func (x *CreditCard) ProtoReflect() protoreflect.Message {
+func (x *UploadFileRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_keeper_service_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -194,57 +154,58 @@ func (x *CreditCard) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreditCard.ProtoReflect.Descriptor instead.
-func (*CreditCard) Descriptor() ([]byte, []int) {
+// Deprecated: Use UploadFileRequest.ProtoReflect.Descriptor instead.
+func (*UploadFileRequest) Descriptor() ([]byte, []int) {
 	return file_keeper_service_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *CreditCard) GetMetadata() string {
-	if x != nil {
-		return x.Metadata
-	}
-	return ""
-}
-
-func (x *CreditCard) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-func (x *CreditCard) GetMonth() string {
-	if x != nil {
-		return x.Month
-	}
-	return ""
-}
-
-func (x *CreditCard) GetYear() string {
-	if x != nil {
-		return x.Year
-	}
-	return ""
-}
-
-func (x *CreditCard) GetBillingAddress() *BillingAddress {
-	if x != nil {
-		return x.BillingAddress
+func (m *UploadFileRequest) GetData() isUploadFileRequest_Data {
+	if m != nil {
+		return m.Data
 	}
 	return nil
 }
 
-type Text struct {
+func (x *UploadFileRequest) GetInfo() *FileInfo {
+	if x, ok := x.GetData().(*UploadFileRequest_Info); ok {
+		return x.Info
+	}
+	return nil
+}
+
+func (x *UploadFileRequest) GetChunkData() []byte {
+	if x, ok := x.GetData().(*UploadFileRequest_ChunkData); ok {
+		return x.ChunkData
+	}
+	return nil
+}
+
+type isUploadFileRequest_Data interface {
+	isUploadFileRequest_Data()
+}
+
+type UploadFileRequest_Info struct {
+	Info *FileInfo `protobuf:"bytes,1,opt,name=info,proto3,oneof"`
+}
+
+type UploadFileRequest_ChunkData struct {
+	ChunkData []byte `protobuf:"bytes,2,opt,name=chunk_data,json=chunkData,proto3,oneof"`
+}
+
+func (*UploadFileRequest_Info) isUploadFileRequest_Data() {}
+
+func (*UploadFileRequest_ChunkData) isUploadFileRequest_Data() {}
+
+type UploadFileResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Metadata string `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
-	Text     string `protobuf:"bytes,2,opt,name=text,proto3" json:"text,omitempty"`
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 }
 
-func (x *Text) Reset() {
-	*x = Text{}
+func (x *UploadFileResponse) Reset() {
+	*x = UploadFileResponse{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_keeper_service_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -252,13 +213,13 @@ func (x *Text) Reset() {
 	}
 }
 
-func (x *Text) String() string {
+func (x *UploadFileResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Text) ProtoMessage() {}
+func (*UploadFileResponse) ProtoMessage() {}
 
-func (x *Text) ProtoReflect() protoreflect.Message {
+func (x *UploadFileResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_keeper_service_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -270,105 +231,17 @@ func (x *Text) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Text.ProtoReflect.Descriptor instead.
-func (*Text) Descriptor() ([]byte, []int) {
+// Deprecated: Use UploadFileResponse.ProtoReflect.Descriptor instead.
+func (*UploadFileResponse) Descriptor() ([]byte, []int) {
 	return file_keeper_service_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *Text) GetMetadata() string {
+func (x *UploadFileResponse) GetId() string {
 	if x != nil {
-		return x.Metadata
+		return x.Id
 	}
 	return ""
 }
-
-func (x *Text) GetText() string {
-	if x != nil {
-		return x.Text
-	}
-	return ""
-}
-
-type FileRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// Types that are assignable to Data:
-	//
-	//	*FileRequest_Info
-	//	*FileRequest_ChunkData
-	Data isFileRequest_Data `protobuf_oneof:"data"`
-}
-
-func (x *FileRequest) Reset() {
-	*x = FileRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_keeper_service_proto_msgTypes[4]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *FileRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*FileRequest) ProtoMessage() {}
-
-func (x *FileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_keeper_service_proto_msgTypes[4]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use FileRequest.ProtoReflect.Descriptor instead.
-func (*FileRequest) Descriptor() ([]byte, []int) {
-	return file_keeper_service_proto_rawDescGZIP(), []int{4}
-}
-
-func (m *FileRequest) GetData() isFileRequest_Data {
-	if m != nil {
-		return m.Data
-	}
-	return nil
-}
-
-func (x *FileRequest) GetInfo() *FileInfo {
-	if x, ok := x.GetData().(*FileRequest_Info); ok {
-		return x.Info
-	}
-	return nil
-}
-
-func (x *FileRequest) GetChunkData() []byte {
-	if x, ok := x.GetData().(*FileRequest_ChunkData); ok {
-		return x.ChunkData
-	}
-	return nil
-}
-
-type isFileRequest_Data interface {
-	isFileRequest_Data()
-}
-
-type FileRequest_Info struct {
-	Info *FileInfo `protobuf:"bytes,1,opt,name=info,proto3,oneof"`
-}
-
-type FileRequest_ChunkData struct {
-	ChunkData []byte `protobuf:"bytes,2,opt,name=chunk_data,json=chunkData,proto3,oneof"`
-}
-
-func (*FileRequest_Info) isFileRequest_Data() {}
-
-func (*FileRequest_ChunkData) isFileRequest_Data() {}
 
 type FileInfo struct {
 	state         protoimpl.MessageState
@@ -382,7 +255,7 @@ type FileInfo struct {
 func (x *FileInfo) Reset() {
 	*x = FileInfo{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_keeper_service_proto_msgTypes[5]
+		mi := &file_keeper_service_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -395,7 +268,7 @@ func (x *FileInfo) String() string {
 func (*FileInfo) ProtoMessage() {}
 
 func (x *FileInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_keeper_service_proto_msgTypes[5]
+	mi := &file_keeper_service_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -408,7 +281,7 @@ func (x *FileInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FileInfo.ProtoReflect.Descriptor instead.
 func (*FileInfo) Descriptor() ([]byte, []int) {
-	return file_keeper_service_proto_rawDescGZIP(), []int{5}
+	return file_keeper_service_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *FileInfo) GetMetadata() string {
@@ -430,47 +303,45 @@ var File_keeper_service_proto protoreflect.FileDescriptor
 var file_keeper_service_proto_rawDesc = []byte{
 	0x0a, 0x14, 0x6b, 0x65, 0x65, 0x70, 0x65, 0x72, 0x5f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
 	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0a, 0x67, 0x6f, 0x70, 0x68, 0x6b, 0x65, 0x65, 0x70,
-	0x65, 0x72, 0x22, 0x5b, 0x0a, 0x0b, 0x43, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c,
-	0x73, 0x12, 0x1a, 0x0a, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0x14, 0x0a,
-	0x05, 0x6c, 0x6f, 0x67, 0x69, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6c, 0x6f,
-	0x67, 0x69, 0x6e, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x18,
-	0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x22,
-	0x72, 0x0a, 0x0e, 0x42, 0x69, 0x6c, 0x6c, 0x69, 0x6e, 0x67, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73,
-	0x73, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x72, 0x79, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x07, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x16, 0x0a, 0x06, 0x73,
-	0x74, 0x72, 0x65, 0x65, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x73, 0x74, 0x72,
-	0x65, 0x65, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x63, 0x69, 0x74, 0x79, 0x18, 0x03, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x04, 0x63, 0x69, 0x74, 0x79, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6f, 0x73, 0x74, 0x63,
-	0x6f, 0x64, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6f, 0x73, 0x74, 0x63,
-	0x6f, 0x64, 0x65, 0x22, 0xaa, 0x01, 0x0a, 0x0a, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x43, 0x61,
-	0x72, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0x12,
-	0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61,
-	0x6d, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x6d, 0x6f, 0x6e, 0x74, 0x68, 0x18, 0x03, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x05, 0x6d, 0x6f, 0x6e, 0x74, 0x68, 0x12, 0x12, 0x0a, 0x04, 0x79, 0x65, 0x61, 0x72,
-	0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x79, 0x65, 0x61, 0x72, 0x12, 0x42, 0x0a, 0x0e,
-	0x62, 0x69, 0x6c, 0x6c, 0x69, 0x6e, 0x67, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x05,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x70, 0x68, 0x6b, 0x65, 0x65, 0x70, 0x65,
-	0x72, 0x2e, 0x42, 0x69, 0x6c, 0x6c, 0x69, 0x6e, 0x67, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
-	0x52, 0x0e, 0x62, 0x69, 0x6c, 0x6c, 0x69, 0x6e, 0x67, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
-	0x22, 0x36, 0x0a, 0x04, 0x54, 0x65, 0x78, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x6d, 0x65, 0x74, 0x61,
-	0x64, 0x61, 0x74, 0x61, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6d, 0x65, 0x74, 0x61,
-	0x64, 0x61, 0x74, 0x61, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x65, 0x78, 0x74, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x04, 0x74, 0x65, 0x78, 0x74, 0x22, 0x62, 0x0a, 0x0b, 0x46, 0x69, 0x6c, 0x65,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x2a, 0x0a, 0x04, 0x69, 0x6e, 0x66, 0x6f, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x67, 0x6f, 0x70, 0x68, 0x6b, 0x65, 0x65, 0x70,
-	0x65, 0x72, 0x2e, 0x46, 0x69, 0x6c, 0x65, 0x49, 0x6e, 0x66, 0x6f, 0x48, 0x00, 0x52, 0x04, 0x69,
-	0x6e, 0x66, 0x6f, 0x12, 0x1f, 0x0a, 0x0a, 0x63, 0x68, 0x75, 0x6e, 0x6b, 0x5f, 0x64, 0x61, 0x74,
-	0x61, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0c, 0x48, 0x00, 0x52, 0x09, 0x63, 0x68, 0x75, 0x6e, 0x6b,
-	0x44, 0x61, 0x74, 0x61, 0x42, 0x06, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x22, 0x3a, 0x0a, 0x08,
-	0x46, 0x69, 0x6c, 0x65, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x1a, 0x0a, 0x08, 0x6d, 0x65, 0x74, 0x61,
-	0x64, 0x61, 0x74, 0x61, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6d, 0x65, 0x74, 0x61,
-	0x64, 0x61, 0x74, 0x61, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x42, 0x2a, 0x5a, 0x28, 0x67, 0x69, 0x74, 0x68,
-	0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x6b, 0x61, 0x61, 0x2d, 0x69, 0x74, 0x2f, 0x67, 0x6f,
-	0x70, 0x68, 0x6b, 0x65, 0x65, 0x70, 0x65, 0x72, 0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61,
-	0x6c, 0x2f, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x65, 0x72, 0x1a, 0x19, 0x63, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x73, 0x5f,
+	0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x55, 0x0a,
+	0x18, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x43, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61,
+	0x6c, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x39, 0x0a, 0x0b, 0x63, 0x72, 0x65,
+	0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17,
+	0x2e, 0x67, 0x6f, 0x70, 0x68, 0x6b, 0x65, 0x65, 0x70, 0x65, 0x72, 0x2e, 0x43, 0x72, 0x65, 0x64,
+	0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x73, 0x52, 0x0b, 0x63, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74,
+	0x69, 0x61, 0x6c, 0x73, 0x22, 0x2b, 0x0a, 0x19, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x43, 0x72,
+	0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69,
+	0x64, 0x22, 0x68, 0x0a, 0x11, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x46, 0x69, 0x6c, 0x65, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x2a, 0x0a, 0x04, 0x69, 0x6e, 0x66, 0x6f, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x67, 0x6f, 0x70, 0x68, 0x6b, 0x65, 0x65, 0x70, 0x65,
+	0x72, 0x2e, 0x46, 0x69, 0x6c, 0x65, 0x49, 0x6e, 0x66, 0x6f, 0x48, 0x00, 0x52, 0x04, 0x69, 0x6e,
+	0x66, 0x6f, 0x12, 0x1f, 0x0a, 0x0a, 0x63, 0x68, 0x75, 0x6e, 0x6b, 0x5f, 0x64, 0x61, 0x74, 0x61,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x0c, 0x48, 0x00, 0x52, 0x09, 0x63, 0x68, 0x75, 0x6e, 0x6b, 0x44,
+	0x61, 0x74, 0x61, 0x42, 0x06, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x22, 0x24, 0x0a, 0x12, 0x55,
+	0x70, 0x6c, 0x6f, 0x61, 0x64, 0x46, 0x69, 0x6c, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69,
+	0x64, 0x22, 0x3a, 0x0a, 0x08, 0x46, 0x69, 0x6c, 0x65, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x1a, 0x0a,
+	0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d,
+	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x32, 0xc0, 0x01,
+	0x0a, 0x0d, 0x4b, 0x65, 0x65, 0x70, 0x65, 0x72, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12,
+	0x60, 0x0a, 0x11, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x43, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74,
+	0x69, 0x61, 0x6c, 0x73, 0x12, 0x24, 0x2e, 0x67, 0x6f, 0x70, 0x68, 0x6b, 0x65, 0x65, 0x70, 0x65,
+	0x72, 0x2e, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x43, 0x72, 0x65, 0x64, 0x65, 0x6e, 0x74, 0x69,
+	0x61, 0x6c, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x25, 0x2e, 0x67, 0x6f, 0x70,
+	0x68, 0x6b, 0x65, 0x65, 0x70, 0x65, 0x72, 0x2e, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x43, 0x72,
+	0x65, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x61, 0x6c, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x4d, 0x0a, 0x0a, 0x55, 0x70, 0x6c, 0x6f, 0x61, 0x64, 0x46, 0x69, 0x6c, 0x65, 0x12,
+	0x1d, 0x2e, 0x67, 0x6f, 0x70, 0x68, 0x6b, 0x65, 0x65, 0x70, 0x65, 0x72, 0x2e, 0x55, 0x70, 0x6c,
+	0x6f, 0x61, 0x64, 0x46, 0x69, 0x6c, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1e,
+	0x2e, 0x67, 0x6f, 0x70, 0x68, 0x6b, 0x65, 0x65, 0x70, 0x65, 0x72, 0x2e, 0x55, 0x70, 0x6c, 0x6f,
+	0x61, 0x64, 0x46, 0x69, 0x6c, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x28, 0x01,
+	0x42, 0x2a, 0x5a, 0x28, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x6b,
+	0x61, 0x61, 0x2d, 0x69, 0x74, 0x2f, 0x67, 0x6f, 0x70, 0x68, 0x6b, 0x65, 0x65, 0x70, 0x65, 0x72,
+	0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -485,20 +356,24 @@ func file_keeper_service_proto_rawDescGZIP() []byte {
 	return file_keeper_service_proto_rawDescData
 }
 
-var file_keeper_service_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_keeper_service_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_keeper_service_proto_goTypes = []any{
-	(*Credentials)(nil),    // 0: gophkeeper.Credentials
-	(*BillingAddress)(nil), // 1: gophkeeper.BillingAddress
-	(*CreditCard)(nil),     // 2: gophkeeper.CreditCard
-	(*Text)(nil),           // 3: gophkeeper.Text
-	(*FileRequest)(nil),    // 4: gophkeeper.FileRequest
-	(*FileInfo)(nil),       // 5: gophkeeper.FileInfo
+	(*UploadCredentialsRequest)(nil),  // 0: gophkeeper.UploadCredentialsRequest
+	(*UploadCredentialsResponse)(nil), // 1: gophkeeper.UploadCredentialsResponse
+	(*UploadFileRequest)(nil),         // 2: gophkeeper.UploadFileRequest
+	(*UploadFileResponse)(nil),        // 3: gophkeeper.UploadFileResponse
+	(*FileInfo)(nil),                  // 4: gophkeeper.FileInfo
+	(*Credentials)(nil),               // 5: gophkeeper.Credentials
 }
 var file_keeper_service_proto_depIdxs = []int32{
-	1, // 0: gophkeeper.CreditCard.billingAddress:type_name -> gophkeeper.BillingAddress
-	5, // 1: gophkeeper.FileRequest.info:type_name -> gophkeeper.FileInfo
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
+	5, // 0: gophkeeper.UploadCredentialsRequest.credentials:type_name -> gophkeeper.Credentials
+	4, // 1: gophkeeper.UploadFileRequest.info:type_name -> gophkeeper.FileInfo
+	0, // 2: gophkeeper.KeeperService.UploadCredentials:input_type -> gophkeeper.UploadCredentialsRequest
+	2, // 3: gophkeeper.KeeperService.UploadFile:input_type -> gophkeeper.UploadFileRequest
+	1, // 4: gophkeeper.KeeperService.UploadCredentials:output_type -> gophkeeper.UploadCredentialsResponse
+	3, // 5: gophkeeper.KeeperService.UploadFile:output_type -> gophkeeper.UploadFileResponse
+	4, // [4:6] is the sub-list for method output_type
+	2, // [2:4] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name
 	2, // [2:2] is the sub-list for extension extendee
 	0, // [0:2] is the sub-list for field type_name
@@ -509,9 +384,10 @@ func file_keeper_service_proto_init() {
 	if File_keeper_service_proto != nil {
 		return
 	}
+	file_credentials_message_proto_init()
 	if !protoimpl.UnsafeEnabled {
 		file_keeper_service_proto_msgTypes[0].Exporter = func(v any, i int) any {
-			switch v := v.(*Credentials); i {
+			switch v := v.(*UploadCredentialsRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -523,7 +399,7 @@ func file_keeper_service_proto_init() {
 			}
 		}
 		file_keeper_service_proto_msgTypes[1].Exporter = func(v any, i int) any {
-			switch v := v.(*BillingAddress); i {
+			switch v := v.(*UploadCredentialsResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -535,7 +411,7 @@ func file_keeper_service_proto_init() {
 			}
 		}
 		file_keeper_service_proto_msgTypes[2].Exporter = func(v any, i int) any {
-			switch v := v.(*CreditCard); i {
+			switch v := v.(*UploadFileRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -547,7 +423,7 @@ func file_keeper_service_proto_init() {
 			}
 		}
 		file_keeper_service_proto_msgTypes[3].Exporter = func(v any, i int) any {
-			switch v := v.(*Text); i {
+			switch v := v.(*UploadFileResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -559,18 +435,6 @@ func file_keeper_service_proto_init() {
 			}
 		}
 		file_keeper_service_proto_msgTypes[4].Exporter = func(v any, i int) any {
-			switch v := v.(*FileRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_keeper_service_proto_msgTypes[5].Exporter = func(v any, i int) any {
 			switch v := v.(*FileInfo); i {
 			case 0:
 				return &v.state
@@ -583,9 +447,9 @@ func file_keeper_service_proto_init() {
 			}
 		}
 	}
-	file_keeper_service_proto_msgTypes[4].OneofWrappers = []any{
-		(*FileRequest_Info)(nil),
-		(*FileRequest_ChunkData)(nil),
+	file_keeper_service_proto_msgTypes[2].OneofWrappers = []any{
+		(*UploadFileRequest_Info)(nil),
+		(*UploadFileRequest_ChunkData)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -593,9 +457,9 @@ func file_keeper_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_keeper_service_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   5,
 			NumExtensions: 0,
-			NumServices:   0,
+			NumServices:   1,
 		},
 		GoTypes:           file_keeper_service_proto_goTypes,
 		DependencyIndexes: file_keeper_service_proto_depIdxs,

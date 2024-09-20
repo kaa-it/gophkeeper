@@ -1,43 +1,36 @@
 syntax = "proto3";
 
+import "credentials_message.proto";
+
 package gophkeeper;
 
 option go_package = "github.com/kaa-it/gophkeeper/internal/pb";
 
-message Credentials {
-    string metadata = 1;
-    string login = 2;
-    string password = 3;
+message UploadCredentialsRequest {
+    Credentials credentials = 1;
 }
 
-message BillingAddress {
-    string country = 1;
-    string street = 2;
-    string city = 3;
-    string postcode = 4;
+message UploadCredentialsResponse {
+    string id = 1;
 }
 
-message CreditCard {
-    string metadata = 1;
-    string name = 2;
-    string month = 3;
-    string year = 4;
-    BillingAddress billingAddress = 5;
-}
-
-message Text {
-    string metadata = 1;
-    string text = 2;
-}
-
-message FileRequest {
+message UploadFileRequest {
     oneof data {
         FileInfo info = 1;
         bytes chunk_data = 2;
     }
 }
 
+message UploadFileResponse {
+    string id = 1;
+}
+
 message FileInfo {
     string metadata = 1;
     string name = 2;
+}
+
+service KeeperService {
+    rpc UploadCredentials(UploadCredentialsRequest) returns (UploadCredentialsResponse);
+    rpc UploadFile(stream UploadFileRequest) returns (UploadFileResponse);
 }

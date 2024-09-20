@@ -7,6 +7,9 @@ import (
 	"net"
 	"time"
 
+	"github.com/kaa-it/gophkeeper/internal/server/application/grpc/keeper"
+	"github.com/kaa-it/gophkeeper/internal/server/infrastructure/storage/file"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
@@ -23,8 +26,11 @@ const (
 // /gophkeeper.AuthService/Login
 
 func protectedMethods() map[string]bool {
+	const keeperServicePath = "/gophkeeper.KeeperService/"
+
 	return map[string]bool{
-		"/gophkeeper.AuthService/Login2": true,
+		keeperServicePath + "UploadCredentials": true,
+		keeperServicePath + "UploadFile":        true,
 	}
 }
 
@@ -62,9 +68,11 @@ func Run() {
 	log.Printf("start server on port %d", *port)
 
 	userStore := user.NewInMemoryUserStore()
+	fileStore := file.NewInMemoryFileStore("files")
 	jwtManager := auth.NewJWTManager(secretKey, tokenDuration)
 
 	authServer := auth.NewServer(userStore, jwtManager)
+	keeperServer := keeper.NewServer(fileStore)
 
 	// tlsCredentials, err := loadTLSCredentials()
 	// if err != nil {
@@ -80,6 +88,7 @@ func Run() {
 	)
 
 	pb.RegisterAuthServiceServer(grpcServer, authServer)
+	pb.RegisterKeeperServiceServer(grpcServer, keeperServer)
 	reflection.Register(grpcServer)
 
 	address := fmt.Sprintf("0.0.0.0:%d", *port)

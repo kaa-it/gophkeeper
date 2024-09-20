@@ -1,59 +1,56 @@
 package client
 
 import (
-	"crypto/tls"
-	"crypto/x509"
-	"errors"
 	"flag"
 	"log"
-	"os"
+	"time"
 
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/kaa-it/gophkeeper/internal/client/auth"
+	"github.com/kaa-it/gophkeeper/internal/client/keeper"
 )
 
-var ErrCannotAppendServerCA = errors.New("cannot append server CA")
+// var ErrCannotAppendServerCA = errors.New("cannot append server CA")
 
-// const (
-//	 refreshDuration = 30 * time.Second
-// )
-//
-// func authMethods() map[string]bool {
-//	 const laptopServicePath = "/LaptopService/"
-//
-//	 return map[string]bool{
-//		 laptopServicePath + "CreateLaptop": true,
-//		 laptopServicePath + "UploadLaptop": true,
-//		 laptopServicePath + "RateLaptop":   true,
-//	 }
-// }
+const (
+	refreshDuration = 30 * time.Second
+)
 
-func loadTLSCredentials() (credentials.TransportCredentials, error) {
-	pemServerCA, err := os.ReadFile("cert/ca-cert.pem")
-	if err != nil {
-		return nil, err
+func authMethods() map[string]bool {
+	const keeperServicePath = "/gophkeeper.KeeperService/"
+
+	return map[string]bool{
+		keeperServicePath + "UploadCredentials": true,
+		keeperServicePath + "UploadFile":        true,
 	}
-
-	certPool := x509.NewCertPool()
-	if !certPool.AppendCertsFromPEM(pemServerCA) {
-		return nil, ErrCannotAppendServerCA
-	}
-
-	clientCert, err := tls.LoadX509KeyPair("cert/client-cert.pem", "cert/client-key.pem")
-	if err != nil {
-		return nil, err
-	}
-
-	config := &tls.Config{
-		MinVersion:   tls.VersionTLS12,
-		Certificates: []tls.Certificate{clientCert},
-		RootCAs:      certPool,
-	}
-
-	return credentials.NewTLS(config), nil
 }
+
+// func loadTLSCredentials() (credentials.TransportCredentials, error) {
+//	pemServerCA, err := os.ReadFile("cert/ca-cert.pem")
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	certPool := x509.NewCertPool()
+//	if !certPool.AppendCertsFromPEM(pemServerCA) {
+//		return nil, ErrCannotAppendServerCA
+//	}
+//
+//	clientCert, err := tls.LoadX509KeyPair("cert/client-cert.pem", "cert/client-key.pem")
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	config := &tls.Config{
+//		MinVersion:   tls.VersionTLS12,
+//		Certificates: []tls.Certificate{clientCert},
+//		RootCAs:      certPool,
+//	}
+//
+//	return credentials.NewTLS(config), nil
+// }
 
 // func testRateLaptop(laptopClient *client.LaptopClient) {
 //	n := 3
@@ -92,31 +89,55 @@ func Run() {
 
 	log.Printf("dial server %s", *serverAddress)
 
-	tlsCredentials, err := loadTLSCredentials()
+	// tlsCredentials, err := loadTLSCredentials()
+	// if err != nil {
+	//	log.Fatal("cannot load TLS credentials: ", err)
+	// }
+	//
+	// cc1, err := grpc.NewClient(*serverAddress, grpc.WithTransportCredentials(tlsCredentials))
+	// if err != nil {
+	//	log.Fatal("cannot dial server: ", err)
+	// }
+	// defer cc1.Close()
+
+	cc1, err := grpc.NewClient(*serverAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Fatal("cannot load TLS credentials: ", err)
+		log.Fatalf("cannot dial server: %v", err)
 	}
 
-	cc1, err := grpc.NewClient(*serverAddress, grpc.WithTransportCredentials(tlsCredentials))
+	authClient := auth.NewClient(cc1)
+	interceptor := auth.NewAuthInterceptor(authClient, authMethods(), refreshDuration)
+
+	cc2, err := grpc.NewClient(
+		*serverAddress,
+		// grpc.WithTransportCredentials(tlsCredentials),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithUnaryInterceptor(interceptor.Unary()),
+		grpc.WithStreamInterceptor(interceptor.Stream()),
+	)
 	if err != nil {
 		log.Fatal("cannot dial server: ", err)
 	}
-	defer cc1.Close()
+	defer cc2.Close()
 
-	authClient := auth.NewClient(cc1)
-	// interceptor := auth.NewAuthInterceptor(authClient, authMethods(), refreshDuration)
+	keeperClient := keeper.NewClient(cc2)
 
-	// cc2, err := grpc.NewClient(
-	//	 *serverAddress,
-	//	 grpc.WithTransportCredentials(tlsCredentials),
-	//	 grpc.WithUnaryInterceptor(interceptor.Unary()),
-	//	 grpc.WithStreamInterceptor(interceptor.Stream()),
-	// )
-	// if err != nil {
-	//	 log.Fatal("cannot dial server: ", err)
-	// }
-	// defer cc2.Close()
-	//
-	// laptopClient := client.NewLaptopClient(cc2)
+	if regErr := authClient.Register("admin", "admin", "admin"); regErr != nil {
+		log.Printf("cannot register: %v", err)
+		return
+	}
+
 	authClient.Login("admin", "admin")
+	// keeperClient.UploadCredentials(&pb.Credentials{
+	//	Metadata: "Yandex",
+	//	Login:    "Test",
+	//	Password: "Test",
+	// })
+	fileID, err := keeperClient.UploadFile("tmp/laptop.jpg", "Laptop")
+	if err != nil {
+		log.Printf("cannot upload file: %v", err)
+		return
+	}
+
+	log.Printf("upload file to %s", fileID)
 }

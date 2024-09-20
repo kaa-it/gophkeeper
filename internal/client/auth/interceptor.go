@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"google.golang.org/grpc"
@@ -91,6 +92,8 @@ func (i *Interceptor) refreshToken() error {
 	if err != nil {
 		return err
 	}
+
+	log.Printf("received token: %s", accessToken)
 
 	i.accessToken = accessToken
 
