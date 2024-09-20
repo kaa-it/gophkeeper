@@ -3,11 +3,10 @@ package client
 import (
 	"crypto/tls"
 	"crypto/x509"
+	"errors"
 	"flag"
-	"fmt"
 	"log"
 	"os"
-	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -15,19 +14,21 @@ import (
 	"github.com/kaa-it/gophkeeper/internal/client/auth"
 )
 
-const (
-	refreshDuration = 30 * time.Second
-)
+var ErrCannotAppendServerCA = errors.New("cannot append server CA")
 
-func authMethods() map[string]bool {
-	const laptopServicePath = "/LaptopService/"
-
-	return map[string]bool{
-		laptopServicePath + "CreateLaptop": true,
-		laptopServicePath + "UploadLaptop": true,
-		laptopServicePath + "RateLaptop":   true,
-	}
-}
+// const (
+//	 refreshDuration = 30 * time.Second
+// )
+//
+// func authMethods() map[string]bool {
+//	 const laptopServicePath = "/LaptopService/"
+//
+//	 return map[string]bool{
+//		 laptopServicePath + "CreateLaptop": true,
+//		 laptopServicePath + "UploadLaptop": true,
+//		 laptopServicePath + "RateLaptop":   true,
+//	 }
+// }
 
 func loadTLSCredentials() (credentials.TransportCredentials, error) {
 	pemServerCA, err := os.ReadFile("cert/ca-cert.pem")
@@ -37,7 +38,7 @@ func loadTLSCredentials() (credentials.TransportCredentials, error) {
 
 	certPool := x509.NewCertPool()
 	if !certPool.AppendCertsFromPEM(pemServerCA) {
-		return nil, fmt.Errorf("cannot append server CA")
+		return nil, ErrCannotAppendServerCA
 	}
 
 	clientCert, err := tls.LoadX509KeyPair("cert/client-cert.pem", "cert/client-key.pem")
@@ -46,6 +47,7 @@ func loadTLSCredentials() (credentials.TransportCredentials, error) {
 	}
 
 	config := &tls.Config{
+		MinVersion:   tls.VersionTLS12,
 		Certificates: []tls.Certificate{clientCert},
 		RootCAs:      certPool,
 	}
@@ -53,7 +55,7 @@ func loadTLSCredentials() (credentials.TransportCredentials, error) {
 	return credentials.NewTLS(config), nil
 }
 
-//func testRateLaptop(laptopClient *client.LaptopClient) {
+// func testRateLaptop(laptopClient *client.LaptopClient) {
 //	n := 3
 //	laptopIDs := make([]string, n)
 //	scores := make([]float64, n)
@@ -102,21 +104,19 @@ func Run() {
 	defer cc1.Close()
 
 	authClient := auth.NewClient(cc1)
-	//interceptor, err := auth.NewAuthInterceptor(authClient, authMethods(), refreshDuration)
-	//if err != nil {
-	//	log.Fatal("cannot create auth interceptor: ", err)
-	//}
+	// interceptor := auth.NewAuthInterceptor(authClient, authMethods(), refreshDuration)
 
-	//cc2, err := grpc.NewClient(
-	//	*serverAddress,
-	//	grpc.WithTransportCredentials(tlsCredentials),
-	//	grpc.WithUnaryInterceptor(interceptor.Unary()),
-	//	grpc.WithStreamInterceptor(interceptor.Stream()),
-	//)
-	//if err != nil {
-	//	log.Fatal("cannot dial server: ", err)
-	//}
-	//defer cc2.Close()
+	// cc2, err := grpc.NewClient(
+	//	 *serverAddress,
+	//	 grpc.WithTransportCredentials(tlsCredentials),
+	//	 grpc.WithUnaryInterceptor(interceptor.Unary()),
+	//	 grpc.WithStreamInterceptor(interceptor.Stream()),
+	// )
+	// if err != nil {
+	//	 log.Fatal("cannot dial server: ", err)
+	// }
+	// defer cc2.Close()
 	//
-	//laptopClient := client.NewLaptopClient(cc2)
+	// laptopClient := client.NewLaptopClient(cc2)
+	authClient.Login("admin", "admin")
 }

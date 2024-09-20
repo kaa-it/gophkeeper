@@ -13,5 +13,5 @@ var (
 
 type Repository interface {
 	Save(user *domain.User) error
-	GetUser(username string) (*domain.User, error)
+	GetUser(login string) (*domain.User, error)
 }

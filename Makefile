@@ -7,11 +7,12 @@ COMMIT := $(shell git rev-parse --short HEAD)
 DATE := $(shell date +'%Y/%m/%d %H:%M:%S')
 PKG_LIST := $(shell go list ./internal/... ;)
 
-build:
+build_client:
 	go build -o gophkeeper_client -ldflags \
 		"-X github.com/kaa-it/gophkeeper/pkg/buildconfig.buildVersion=${CLIENT_VERSION} \
 		-X 'github.com/kaa-it/gophkeeper/pkg/buildconfig.buildDate=${DATE}' \
 		-X github.com/kaa-it/gophkeeper/pkg/buildconfig.buildCommit=${COMMIT}" ./cmd/client ;
+build_server:
 	go build -o gophkeeper_server -ldflags \
 		"-X github.com/kaa-it/gophkeeper/pkg/buildconfig.buildVersion=${SERVER_VERSION} \
 		-X 'github.com/kaa-it/gophkeeper/pkg/buildconfig.buildDate=${DATE}' \
@@ -53,3 +54,9 @@ evans:
 
 cert:
 	cd cert; ./gen.sh; cd ..
+
+run_server:
+	./gophkeeper_server -port 8080
+
+run_client:
+	./gophkeeper_client -address "0.0.0.0:8080"

@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"log"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -10,17 +11,21 @@ import (
 )
 
 type Interceptor struct {
-	jwtManager *JWTManager
+	jwtManager       *JWTManager
+	protectedMethods map[string]bool
 }
 
-func NewAuthInterceptor(jwtManager *JWTManager) *Interceptor {
+func NewAuthInterceptor(jwtManager *JWTManager, protectedMethods map[string]bool) *Interceptor {
 	return &Interceptor{
-		jwtManager: jwtManager,
+		jwtManager:       jwtManager,
+		protectedMethods: protectedMethods,
 	}
 }
 
 func (interceptor *Interceptor) Unary() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
+		log.Println("---> Unary: ", info.FullMethod)
+
 		err := interceptor.authorize(ctx, info.FullMethod)
 		if err != nil {
 			return nil, err
@@ -32,6 +37,8 @@ func (interceptor *Interceptor) Unary() grpc.UnaryServerInterceptor {
 
 func (interceptor *Interceptor) Stream() grpc.StreamServerInterceptor {
 	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+		log.Println("---> Stream: ", info.FullMethod)
+
 		err := interceptor.authorize(ss.Context(), info.FullMethod)
 		if err != nil {
 			return err
@@ -41,7 +48,12 @@ func (interceptor *Interceptor) Stream() grpc.StreamServerInterceptor {
 	}
 }
 
-func (interceptor *Interceptor) authorize(ctx context.Context, _ string) error {
+func (interceptor *Interceptor) authorize(ctx context.Context, method string) error {
+	_, ok := interceptor.protectedMethods[method]
+	if !ok {
+		return nil
+	}
+
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return status.Errorf(codes.Unauthenticated, "metadata not found")

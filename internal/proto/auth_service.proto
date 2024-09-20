@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "google/protobuf/empty.proto";
+
 package gophkeeper;
 
 option go_package = "github.com/kaa-it/gophkeeper/internal/pb";
@@ -15,11 +17,11 @@ message RegisterRequest {
   string password = 3;
 }
 
-message AuthResponse {
+message LoginResponse {
   string access_token = 1;
 }
 
 service AuthService {
-  rpc Login(LoginRequest) returns (AuthResponse);
-  rpc Register(RegisterRequest) returns (AuthResponse);
+  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc Register(RegisterRequest) returns (google.protobuf.Empty);
 }

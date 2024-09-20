@@ -1,17 +1,13 @@
 package server
 
 import (
-	"crypto/tls"
-	"crypto/x509"
 	"flag"
 	"fmt"
 	"log"
 	"net"
-	"os"
 	"time"
 
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/reflection"
 
 	"github.com/kaa-it/gophkeeper/internal/pb"
@@ -24,30 +20,39 @@ const (
 	tokenDuration = 15 * time.Minute
 )
 
-func loadTLSCredentials() (credentials.TransportCredentials, error) {
-	pemClientCA, err := os.ReadFile("cert/ca-cert.pem")
-	if err != nil {
-		return nil, err
-	}
+// /gophkeeper.AuthService/Login
 
-	certPool := x509.NewCertPool()
-	if !certPool.AppendCertsFromPEM(pemClientCA) {
-		return nil, fmt.Errorf("cannot append client CA")
+func protectedMethods() map[string]bool {
+	return map[string]bool{
+		"/gophkeeper.AuthService/Login2": true,
 	}
-
-	serverCert, err := tls.LoadX509KeyPair("cert/server-cert.pem", "cert/server-key.pem")
-	if err != nil {
-		return nil, err
-	}
-
-	config := &tls.Config{
-		Certificates: []tls.Certificate{serverCert},
-		ClientAuth:   tls.RequireAndVerifyClientCert,
-		ClientCAs:    certPool,
-	}
-
-	return credentials.NewTLS(config), nil
 }
+
+// func loadTLSCredentials() (credentials.TransportCredentials, error) {
+//	pemClientCA, err := os.ReadFile("cert/ca-cert.pem")
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	certPool := x509.NewCertPool()
+//	if !certPool.AppendCertsFromPEM(pemClientCA) {
+//		return nil, fmt.Errorf("cannot append client CA")
+//	}
+//
+//	serverCert, err := tls.LoadX509KeyPair("cert/server-cert.pem", "cert/server-key.pem")
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	config := &tls.Config{
+//		MinVersion:   tls.VersionTLS12,
+//		Certificates: []tls.Certificate{serverCert},
+//		ClientAuth:   tls.RequireAndVerifyClientCert,
+//		ClientCAs:    certPool,
+//	}
+//
+//	return credentials.NewTLS(config), nil
+// }
 
 func Run() {
 	port := flag.Int("port", 0, "the server port")
@@ -61,15 +66,15 @@ func Run() {
 
 	authServer := auth.NewServer(userStore, jwtManager)
 
-	tlsCredentials, err := loadTLSCredentials()
-	if err != nil {
-		log.Fatal("cannot load TLS credentials: ", err)
-	}
+	// tlsCredentials, err := loadTLSCredentials()
+	// if err != nil {
+	//	 log.Fatal("cannot load TLS credentials: ", err)
+	// }
 
-	interceptor := auth.NewAuthInterceptor(jwtManager)
+	interceptor := auth.NewAuthInterceptor(jwtManager, protectedMethods())
 
 	grpcServer := grpc.NewServer(
-		grpc.Creds(tlsCredentials),
+		// grpc.Creds(tlsCredentials),
 		grpc.UnaryInterceptor(interceptor.Unary()),
 		grpc.StreamInterceptor(interceptor.Stream()),
 	)

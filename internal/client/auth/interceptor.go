@@ -18,18 +18,15 @@ func NewAuthInterceptor(
 	authClient *Client,
 	authMethods map[string]bool,
 	refreshDuration time.Duration,
-) (*Interceptor, error) {
+) *Interceptor {
 	interceptor := &Interceptor{
 		authClient:  authClient,
 		authMethods: authMethods,
 	}
 
-	err := interceptor.scheduleRefreshToken(refreshDuration)
-	if err != nil {
-		return nil, err
-	}
+	interceptor.scheduleRefreshToken(refreshDuration)
 
-	return interceptor, nil
+	return interceptor
 }
 
 func (i *Interceptor) Unary() grpc.UnaryClientInterceptor {
@@ -70,16 +67,15 @@ func (i *Interceptor) attachToken(ctx context.Context) context.Context {
 	return metadata.AppendToOutgoingContext(ctx, "authorization", i.accessToken)
 }
 
-func (i *Interceptor) scheduleRefreshToken(refreshDuration time.Duration) error {
-	err := i.refreshToken()
-	if err != nil {
-		return err
-	}
-
+func (i *Interceptor) scheduleRefreshToken(refreshDuration time.Duration) {
 	go func() {
 		wait := refreshDuration
 		for {
-			<-time.After(wait)
+			select {
+			case <-i.authClient.notifyChannel:
+			case <-time.After(wait):
+			}
+
 			err := i.refreshToken()
 			if err != nil {
 				wait = time.Second
@@ -88,12 +84,10 @@ func (i *Interceptor) scheduleRefreshToken(refreshDuration time.Duration) error 
 			}
 		}
 	}()
-
-	return nil
 }
 
 func (i *Interceptor) refreshToken() error {
-	accessToken, err := i.authClient.Login()
+	accessToken, err := i.authClient.RefreshToken()
 	if err != nil {
 		return err
 	}

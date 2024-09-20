@@ -32,6 +32,7 @@ func (u *User) IsCorrectPassword(password string) bool {
 func (u *User) Clone() *User {
 	return &User{
 		Username:       u.Username,
+		Login:          u.Login,
 		HashedPassword: u.HashedPassword,
 	}
 }

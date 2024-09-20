@@ -21,19 +21,19 @@ func (s *InMemoryUserStore) Save(user *domain.User) error {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
-	if s.users[user.Username] != nil {
+	if s.users[user.Login] != nil {
 		return ErrUserAlreadyExists
 	}
 
-	s.users[user.Username] = user.Clone()
+	s.users[user.Login] = user.Clone()
 	return nil
 }
 
-func (s *InMemoryUserStore) GetUser(username string) (*domain.User, error) {
+func (s *InMemoryUserStore) GetUser(login string) (*domain.User, error) {
 	s.mutex.RLock()
 	defer s.mutex.RUnlock()
 
-	user := s.users[username]
+	user := s.users[login]
 	if user == nil {
 		return nil, ErrUserNotFound
 	}
