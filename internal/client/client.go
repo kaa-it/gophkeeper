@@ -123,16 +123,21 @@ func Run() {
 	keeperClient := keeper.NewClient(cc2)
 
 	if regErr := authClient.Register("admin", "admin", "admin"); regErr != nil {
-		log.Printf("cannot register: %v", err)
+		log.Printf("cannot register: %v", regErr)
 		return
 	}
 
-	authClient.Login("admin", "admin")
+	if logErr := authClient.Login("admin", "admin"); logErr != nil {
+		log.Printf("cannot login: %v", logErr)
+		return
+	}
+
 	// keeperClient.UploadCredentials(&pb.Credentials{
 	//	Metadata: "Yandex",
 	//	Login:    "Test",
 	//	Password: "Test",
 	// })
+
 	fileID, err := keeperClient.UploadFile("tmp/laptop.jpg", "Laptop")
 	if err != nil {
 		log.Printf("cannot upload file: %v", err)

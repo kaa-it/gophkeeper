@@ -70,5 +70,5 @@ func (interceptor *Interceptor) authorize(ctx context.Context, method string) er
 		return status.Errorf(codes.Unauthenticated, "invalid token: %v", err)
 	}
 
-	return status.Errorf(codes.PermissionDenied, "permission denied")
+	return nil
 }

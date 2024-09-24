@@ -12,7 +12,6 @@ import (
 type Interceptor struct {
 	authClient  *Client
 	authMethods map[string]bool
-	accessToken string
 }
 
 func NewAuthInterceptor(
@@ -65,17 +64,17 @@ func (i *Interceptor) Stream() grpc.StreamClientInterceptor {
 }
 
 func (i *Interceptor) attachToken(ctx context.Context) context.Context {
-	return metadata.AppendToOutgoingContext(ctx, "authorization", i.accessToken)
+	token := i.authClient.AccessToken()
+	return metadata.AppendToOutgoingContext(ctx, "authorization", token)
 }
 
 func (i *Interceptor) scheduleRefreshToken(refreshDuration time.Duration) {
 	go func() {
+		<-i.authClient.notifyChannel
+
 		wait := refreshDuration
 		for {
-			select {
-			case <-i.authClient.notifyChannel:
-			case <-time.After(wait):
-			}
+			<-time.After(wait)
 
 			err := i.refreshToken()
 			if err != nil {
@@ -95,7 +94,7 @@ func (i *Interceptor) refreshToken() error {
 
 	log.Printf("received token: %s", accessToken)
 
-	i.accessToken = accessToken
+	i.authClient.accessToken = accessToken
 
 	return nil
 }

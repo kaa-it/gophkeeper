@@ -102,6 +102,8 @@ func (client *Client) UploadFile(filePath string, metadata string) (string, erro
 		}
 	}
 
+	log.Println("close stream")
+
 	res, err := stream.CloseAndRecv()
 	if err != nil {
 		return "", fmt.Errorf("cannot close stream: %w", err)
