@@ -1,6 +1,8 @@
 syntax = "proto3";
 
 import "credentials_message.proto";
+import "credit_card_message.proto";
+import "text_message.proto";
 
 package gophkeeper;
 
@@ -25,6 +27,22 @@ message UploadFileResponse {
     string id = 1;
 }
 
+message UploadCreditCardRequest {
+    CreditCard creditCard = 1;
+}
+
+message UploadCreditCardResponse {
+    string id = 1;
+}
+
+message UploadTextRequest {
+    Text text = 1;
+}
+
+message UploadTextResponse  {
+    string id = 1;
+}
+
 message FileInfo {
     string metadata = 1;
     string name = 2;
@@ -32,5 +50,7 @@ message FileInfo {
 
 service KeeperService {
     rpc UploadCredentials(UploadCredentialsRequest) returns (UploadCredentialsResponse);
+    rpc UploadCreditCard(UploadCreditCardRequest) returns (UploadCreditCardResponse);
+    rpc UploadText(UploadTextRequest) returns (UploadTextResponse);
     rpc UploadFile(stream UploadFileRequest) returns (UploadFileResponse);
 }

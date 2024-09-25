@@ -9,11 +9,13 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+// Interceptor provides gRPC interceptors for unary and stream methods to attach authentication tokens.
 type Interceptor struct {
 	authClient  *Client
 	authMethods map[string]bool
 }
 
+// NewAuthInterceptor creates a new Interceptor with the given authClient, authMethods, and token refresh duration.
 func NewAuthInterceptor(
 	authClient *Client,
 	authMethods map[string]bool,
@@ -29,6 +31,8 @@ func NewAuthInterceptor(
 	return interceptor
 }
 
+// Unary returns a grpc.UnaryClientInterceptor that attaches an auth token to
+// outgoing gRPC requests if the method requires it.
 func (i *Interceptor) Unary() grpc.UnaryClientInterceptor {
 	return func(
 		ctx context.Context,
@@ -46,6 +50,8 @@ func (i *Interceptor) Unary() grpc.UnaryClientInterceptor {
 	}
 }
 
+// Stream returns a grpc.StreamClientInterceptor. It attaches an authentication token
+// to outgoing gRPC streams if the method requires it.
 func (i *Interceptor) Stream() grpc.StreamClientInterceptor {
 	return func(
 		ctx context.Context,
@@ -87,7 +93,7 @@ func (i *Interceptor) scheduleRefreshToken(refreshDuration time.Duration) {
 }
 
 func (i *Interceptor) refreshToken() error {
-	accessToken, err := i.authClient.RefreshToken()
+	accessToken, err := i.authClient.refreshToken()
 	if err != nil {
 		return err
 	}

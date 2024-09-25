@@ -10,11 +10,13 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+// Interceptor handles authorization of gRPC methods using JWT tokens and a set of protected methods.
 type Interceptor struct {
 	jwtManager       *JWTManager
 	protectedMethods map[string]bool
 }
 
+// NewAuthInterceptor creates a new Interceptor instance with the specified JWTManager and a map of protected methods.
 func NewAuthInterceptor(jwtManager *JWTManager, protectedMethods map[string]bool) *Interceptor {
 	return &Interceptor{
 		jwtManager:       jwtManager,
@@ -22,6 +24,7 @@ func NewAuthInterceptor(jwtManager *JWTManager, protectedMethods map[string]bool
 	}
 }
 
+// Unary returns a grpc.UnaryServerInterceptor that logs the method name and authorizes the request based on JWT tokens.
 func (interceptor *Interceptor) Unary() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 		log.Println("---> Unary: ", info.FullMethod)
@@ -35,6 +38,8 @@ func (interceptor *Interceptor) Unary() grpc.UnaryServerInterceptor {
 	}
 }
 
+// Stream returns a grpc.StreamServerInterceptor that logs the method
+// name and authorizes the request based on JWT tokens.
 func (interceptor *Interceptor) Stream() grpc.StreamServerInterceptor {
 	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 		log.Println("---> Stream: ", info.FullMethod)

@@ -35,16 +35,16 @@ func (s *Server) Login(_ context.Context, req *pb.LoginRequest) (*pb.LoginRespon
 		return nil, status.Errorf(codes.InvalidArgument, "invalid login or password")
 	}
 
-	user, err := s.userStore.GetUser(req.GetLogin())
+	foundedUser, err := s.userStore.Get(req.GetLogin())
 	if err != nil {
-		return nil, status.Errorf(codes.NotFound, "failed to find user: %v", err)
+		return nil, status.Errorf(codes.NotFound, "failed to find foundedUser: %v", err)
 	}
 
-	if !user.IsCorrectPassword(req.GetPassword()) {
+	if !foundedUser.IsCorrectPassword(req.GetPassword()) {
 		return nil, status.Errorf(codes.Unauthenticated, "invalid login or password")
 	}
 
-	token, err := s.jwtManager.Generate(user)
+	token, err := s.jwtManager.Generate(foundedUser)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to generate access token: %v", err)
 	}
@@ -56,17 +56,18 @@ func (s *Server) Login(_ context.Context, req *pb.LoginRequest) (*pb.LoginRespon
 	return res, nil
 }
 
+// Register handles the user registration process by validating input data and storing a new user in the repository.
 func (s *Server) Register(_ context.Context, req *pb.RegisterRequest) (*emptypb.Empty, error) {
 	if (req.GetUsername() == "") || (req.GetLogin() == "") || (req.GetPassword() == "") {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid username, login or password")
 	}
 
-	user, err := domain.NewUser(req.GetUsername(), req.GetLogin(), req.GetPassword())
+	newUser, err := domain.NewUser(req.GetUsername(), req.GetLogin(), req.GetPassword())
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "password too long: %v", err)
 	}
 
-	if err := s.userStore.Save(user); err != nil {
+	if err := s.userStore.Save(newUser); err != nil {
 		return nil, status.Errorf(codes.AlreadyExists, "failed to save user: %v", err)
 	}
 

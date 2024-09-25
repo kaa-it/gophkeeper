@@ -21,6 +21,8 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	KeeperService_UploadCredentials_FullMethodName = "/gophkeeper.KeeperService/UploadCredentials"
+	KeeperService_UploadCreditCard_FullMethodName  = "/gophkeeper.KeeperService/UploadCreditCard"
+	KeeperService_UploadText_FullMethodName        = "/gophkeeper.KeeperService/UploadText"
 	KeeperService_UploadFile_FullMethodName        = "/gophkeeper.KeeperService/UploadFile"
 )
 
@@ -29,6 +31,8 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type KeeperServiceClient interface {
 	UploadCredentials(ctx context.Context, in *UploadCredentialsRequest, opts ...grpc.CallOption) (*UploadCredentialsResponse, error)
+	UploadCreditCard(ctx context.Context, in *UploadCreditCardRequest, opts ...grpc.CallOption) (*UploadCreditCardResponse, error)
+	UploadText(ctx context.Context, in *UploadTextRequest, opts ...grpc.CallOption) (*UploadTextResponse, error)
 	UploadFile(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[UploadFileRequest, UploadFileResponse], error)
 }
 
@@ -44,6 +48,26 @@ func (c *keeperServiceClient) UploadCredentials(ctx context.Context, in *UploadC
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UploadCredentialsResponse)
 	err := c.cc.Invoke(ctx, KeeperService_UploadCredentials_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *keeperServiceClient) UploadCreditCard(ctx context.Context, in *UploadCreditCardRequest, opts ...grpc.CallOption) (*UploadCreditCardResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UploadCreditCardResponse)
+	err := c.cc.Invoke(ctx, KeeperService_UploadCreditCard_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *keeperServiceClient) UploadText(ctx context.Context, in *UploadTextRequest, opts ...grpc.CallOption) (*UploadTextResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UploadTextResponse)
+	err := c.cc.Invoke(ctx, KeeperService_UploadText_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -68,6 +92,8 @@ type KeeperService_UploadFileClient = grpc.ClientStreamingClient[UploadFileReque
 // for forward compatibility.
 type KeeperServiceServer interface {
 	UploadCredentials(context.Context, *UploadCredentialsRequest) (*UploadCredentialsResponse, error)
+	UploadCreditCard(context.Context, *UploadCreditCardRequest) (*UploadCreditCardResponse, error)
+	UploadText(context.Context, *UploadTextRequest) (*UploadTextResponse, error)
 	UploadFile(grpc.ClientStreamingServer[UploadFileRequest, UploadFileResponse]) error
 	mustEmbedUnimplementedKeeperServiceServer()
 }
@@ -81,6 +107,12 @@ type UnimplementedKeeperServiceServer struct{}
 
 func (UnimplementedKeeperServiceServer) UploadCredentials(context.Context, *UploadCredentialsRequest) (*UploadCredentialsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UploadCredentials not implemented")
+}
+func (UnimplementedKeeperServiceServer) UploadCreditCard(context.Context, *UploadCreditCardRequest) (*UploadCreditCardResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UploadCreditCard not implemented")
+}
+func (UnimplementedKeeperServiceServer) UploadText(context.Context, *UploadTextRequest) (*UploadTextResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UploadText not implemented")
 }
 func (UnimplementedKeeperServiceServer) UploadFile(grpc.ClientStreamingServer[UploadFileRequest, UploadFileResponse]) error {
 	return status.Errorf(codes.Unimplemented, "method UploadFile not implemented")
@@ -124,6 +156,42 @@ func _KeeperService_UploadCredentials_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _KeeperService_UploadCreditCard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UploadCreditCardRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(KeeperServiceServer).UploadCreditCard(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: KeeperService_UploadCreditCard_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(KeeperServiceServer).UploadCreditCard(ctx, req.(*UploadCreditCardRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _KeeperService_UploadText_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UploadTextRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(KeeperServiceServer).UploadText(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: KeeperService_UploadText_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(KeeperServiceServer).UploadText(ctx, req.(*UploadTextRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _KeeperService_UploadFile_Handler(srv interface{}, stream grpc.ServerStream) error {
 	return srv.(KeeperServiceServer).UploadFile(&grpc.GenericServerStream[UploadFileRequest, UploadFileResponse]{ServerStream: stream})
 }
@@ -141,6 +209,14 @@ var KeeperService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UploadCredentials",
 			Handler:    _KeeperService_UploadCredentials_Handler,
+		},
+		{
+			MethodName: "UploadCreditCard",
+			Handler:    _KeeperService_UploadCreditCard_Handler,
+		},
+		{
+			MethodName: "UploadText",
+			Handler:    _KeeperService_UploadText_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

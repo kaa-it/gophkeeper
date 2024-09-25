@@ -107,7 +107,7 @@ func TestServerRegister(t *testing.T) {
 			if tc.code == codes.OK {
 				require.NoError(t, err)
 
-				user, innerErr := emptyStore.GetUser(tc.login)
+				user, innerErr := emptyStore.Get(tc.login)
 				require.NoError(t, innerErr)
 
 				require.Equal(t, user.Username, tc.username)

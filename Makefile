@@ -61,3 +61,6 @@ run_server:
 
 run_client:
 	./gophkeeper_client -address "0.0.0.0:8080"
+
+test:
+	go test ./internal/...

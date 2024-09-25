@@ -10,6 +10,7 @@ import (
 	"github.com/kaa-it/gophkeeper/internal/server/domain"
 )
 
+// ErrInvalidTokenClaims indicates that the JWT token claims are invalid or cannot be parsed.
 var ErrInvalidTokenClaims = errors.New("invalid token claims")
 
 // JWTManager is responsible for generating and validating JWT tokens.
@@ -46,6 +47,8 @@ func (m *JWTManager) Generate(user *domain.User) (string, error) {
 	return token.SignedString([]byte(m.secretKey))
 }
 
+// Verify validates the provided JWT token and returns the user
+// claims if the token is valid; otherwise, returns an error.
 func (m *JWTManager) Verify(accessToken string) (*UserClaims, error) {
 	token, err := jwt.ParseWithClaims(accessToken, &UserClaims{}, func(_ *jwt.Token) (any, error) {
 		return []byte(m.secretKey), nil

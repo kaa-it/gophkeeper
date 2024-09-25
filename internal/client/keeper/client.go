@@ -21,16 +21,20 @@ const (
 	bufferSize     = 1024
 )
 
+// Client represents a client to interact with KeeperService.
 type Client struct {
 	service pb.KeeperServiceClient
 }
 
+// NewClient creates a new instance of Client using the provided grpc.ClientConn.
 func NewClient(conn *grpc.ClientConn) *Client {
 	return &Client{
 		service: pb.NewKeeperServiceClient(conn),
 	}
 }
 
+// UploadCredentials uploads the provided credentials to the KeeperService
+// and returns an ID or an error if the upload fails.
 func (client *Client) UploadCredentials(credentials *pb.Credentials) (string, error) {
 	req := &pb.UploadCredentialsRequest{
 		Credentials: credentials,
@@ -48,6 +52,45 @@ func (client *Client) UploadCredentials(credentials *pb.Credentials) (string, er
 	return res.GetId(), nil
 }
 
+// UploadCreditCard uploads the provided credit card details to the KeeperService
+// and returns an ID or an error if the upload fails.
+func (client *Client) UploadCreditCard(creditCard *pb.CreditCard) (string, error) {
+	req := &pb.UploadCreditCardRequest{
+		CreditCard: creditCard,
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
+	defer cancel()
+
+	res, err := client.service.UploadCreditCard(ctx, req)
+	if err != nil {
+		log.Println("failed to upload credit card: ", err)
+		return "", err
+	}
+
+	return res.GetId(), nil
+}
+
+// UploadText uploads the provided text to the KeeperService and returns an ID or an error if the upload fails.
+func (client *Client) UploadText(text *pb.Text) (string, error) {
+	req := &pb.UploadTextRequest{
+		Text: text,
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), requestTimeout)
+	defer cancel()
+
+	res, err := client.service.UploadText(ctx, req)
+	if err != nil {
+		log.Println("failed to upload text: ", err)
+		return "", err
+	}
+
+	return res.GetId(), nil
+}
+
+// UploadFile uploads a file specified by filePath to the server with the provided metadata.
+// It returns the ID of the uploaded file or an error if the upload process fails.
 func (client *Client) UploadFile(filePath string, metadata string) (string, error) {
 	file, err := os.Open(filePath)
 	if err != nil {

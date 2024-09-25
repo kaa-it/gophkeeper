@@ -1,24 +1,33 @@
 package client
 
 import (
+	"crypto/tls"
+	"crypto/x509"
+	"errors"
 	"flag"
 	"log"
+	"os"
 	"time"
 
+	"google.golang.org/grpc/credentials"
+
+	"github.com/kaa-it/gophkeeper/internal/pb"
+
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/kaa-it/gophkeeper/internal/client/auth"
 	"github.com/kaa-it/gophkeeper/internal/client/keeper"
 )
 
-// var ErrCannotAppendServerCA = errors.New("cannot append server CA")
+// ErrCannotAppendServerCA is the error returned when the server CA certificate cannot be appended to the cert pool.
+var ErrCannotAppendServerCA = errors.New("cannot append server CA")
 
 const (
 	refreshDuration = 30 * time.Second
 )
 
-func authMethods() map[string]bool {
+// AuthMethods returns a map of gRPC method names to a boolean indicating if the method requires authentication.
+func AuthMethods() map[string]bool {
 	const keeperServicePath = "/gophkeeper.KeeperService/"
 
 	return map[string]bool{
@@ -27,96 +36,61 @@ func authMethods() map[string]bool {
 	}
 }
 
-// func loadTLSCredentials() (credentials.TransportCredentials, error) {
-//	pemServerCA, err := os.ReadFile("cert/ca-cert.pem")
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	certPool := x509.NewCertPool()
-//	if !certPool.AppendCertsFromPEM(pemServerCA) {
-//		return nil, ErrCannotAppendServerCA
-//	}
-//
-//	clientCert, err := tls.LoadX509KeyPair("cert/client-cert.pem", "cert/client-key.pem")
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	config := &tls.Config{
-//		MinVersion:   tls.VersionTLS12,
-//		Certificates: []tls.Certificate{clientCert},
-//		RootCAs:      certPool,
-//	}
-//
-//	return credentials.NewTLS(config), nil
-// }
+func loadTLSCredentials() (credentials.TransportCredentials, error) {
+	pemServerCA, err := os.ReadFile("cert/ca-cert.pem")
+	if err != nil {
+		return nil, err
+	}
 
-// func testRateLaptop(laptopClient *client.LaptopClient) {
-//	n := 3
-//	laptopIDs := make([]string, n)
-//	scores := make([]float64, n)
-//
-//	for i := 0; i < n; i++ {
-//		laptop := sample.NewLaptop()
-//		laptopClient.CreateLaptop(laptop)
-//		laptopIDs[i] = laptop.GetId()
-//	}
-//
-//	for {
-//		fmt.Print("rate laptop (y/n)? ")
-//		var answer string
-//		fmt.Scan(&answer)
-//
-//		if strings.ToLower(answer) != "y" {
-//			break
-//		}
-//
-//		for i := 0; i < n; i++ {
-//			scores[i] = sample.RandomLaptopScore()
-//		}
-//
-//		err := laptopClient.RateLaptop(laptopIDs, scores)
-//		if err != nil {
-//			log.Fatal("cannot rate laptop: ", err)
-//		}
-//	}
-//}
+	certPool := x509.NewCertPool()
+	if !certPool.AppendCertsFromPEM(pemServerCA) {
+		return nil, ErrCannotAppendServerCA
+	}
 
+	clientCert, err := tls.LoadX509KeyPair("cert/client-cert.pem", "cert/client-key.pem")
+	if err != nil {
+		return nil, err
+	}
+
+	config := &tls.Config{
+		MinVersion:   tls.VersionTLS12,
+		Certificates: []tls.Certificate{clientCert},
+		RootCAs:      certPool,
+	}
+
+	return credentials.NewTLS(config), nil
+}
+
+// Run initializes the gRPC clients, registers and logs in the admin user, and attempts to upload a file to the server.
 func Run() {
 	serverAddress := flag.String("address", "", "the server address")
 	flag.Parse()
 
 	log.Printf("dial server %s", *serverAddress)
 
-	// tlsCredentials, err := loadTLSCredentials()
-	// if err != nil {
-	//	log.Fatal("cannot load TLS credentials: ", err)
-	// }
-	//
-	// cc1, err := grpc.NewClient(*serverAddress, grpc.WithTransportCredentials(tlsCredentials))
-	// if err != nil {
-	//	log.Fatal("cannot dial server: ", err)
-	// }
-	// defer cc1.Close()
-
-	cc1, err := grpc.NewClient(*serverAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	tlsCredentials, err := loadTLSCredentials()
 	if err != nil {
-		log.Fatalf("cannot dial server: %v", err)
+		log.Fatal("cannot load TLS credentials: ", err)
 	}
 
+	cc1, err := grpc.NewClient(*serverAddress, grpc.WithTransportCredentials(tlsCredentials))
+	if err != nil {
+		log.Fatal("cannot dial server: ", err)
+	}
+	defer cc1.Close()
+
 	authClient := auth.NewClient(cc1)
-	interceptor := auth.NewAuthInterceptor(authClient, authMethods(), refreshDuration)
+	interceptor := auth.NewAuthInterceptor(authClient, AuthMethods(), refreshDuration)
 
 	cc2, err := grpc.NewClient(
 		*serverAddress,
-		// grpc.WithTransportCredentials(tlsCredentials),
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithTransportCredentials(tlsCredentials),
 		grpc.WithUnaryInterceptor(interceptor.Unary()),
 		grpc.WithStreamInterceptor(interceptor.Stream()),
 	)
 	if err != nil {
-		log.Fatal("cannot dial server: ", err)
+		log.Println("cannot dial server: ", err)
+		return
 	}
 	defer cc2.Close()
 
@@ -132,11 +106,17 @@ func Run() {
 		return
 	}
 
-	// keeperClient.UploadCredentials(&pb.Credentials{
-	//	Metadata: "Yandex",
-	//	Login:    "Test",
-	//	Password: "Test",
-	// })
+	credentialsID, err := keeperClient.UploadCredentials(&pb.Credentials{
+		Metadata: "Yandex",
+		Login:    "Test",
+		Password: "Test",
+	})
+	if err != nil {
+		log.Printf("cannot upload credentials: %v", err)
+		return
+	}
+
+	log.Printf("upload credentials to %s", credentialsID)
 
 	fileID, err := keeperClient.UploadFile("tmp/laptop.jpg", "Laptop")
 	if err != nil {
