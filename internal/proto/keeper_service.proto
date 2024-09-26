@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+import "credentials_message.proto";
+import "credit_card_message.proto";
+import "text_message.proto";
+
+package gophkeeper;
+
+option go_package = "github.com/kaa-it/gophkeeper/internal/pb";
+
+message UploadCredentialsRequest {
+    Credentials credentials = 1;
+}
+
+message UploadCredentialsResponse {
+    string id = 1;
+}
+
+message UploadFileRequest {
+    oneof data {
+        FileInfo info = 1;
+        bytes chunk_data = 2;
+    }
+}
+
+message UploadFileResponse {
+    string id = 1;
+}
+
+message UploadCreditCardRequest {
+    CreditCard creditCard = 1;
+}
+
+message UploadCreditCardResponse {
+    string id = 1;
+}
+
+message UploadTextRequest {
+    Text text = 1;
+}
+
+message UploadTextResponse  {
+    string id = 1;
+}
+
+message FileInfo {
+    string metadata = 1;
+    string name = 2;
+}
+
+service KeeperService {
+    rpc UploadCredentials(UploadCredentialsRequest) returns (UploadCredentialsResponse);
+    rpc UploadCreditCard(UploadCreditCardRequest) returns (UploadCreditCardResponse);
+    rpc UploadText(UploadTextRequest) returns (UploadTextResponse);
+    rpc UploadFile(stream UploadFileRequest) returns (UploadFileResponse);
+}

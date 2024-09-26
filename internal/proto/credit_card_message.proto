@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package gophkeeper;
+
+option go_package = "github.com/kaa-it/gophkeeper/internal/pb";
+
+message BillingAddress {
+  string country = 1;
+  string street = 2;
+  string city = 3;
+  string postcode = 4;
+}
+
+message CreditCard {
+  string metadata = 1;
+  string name = 2;
+  string month = 3;
+  string year = 4;
+  string number = 5;
+  BillingAddress billingAddress = 6;
+}
